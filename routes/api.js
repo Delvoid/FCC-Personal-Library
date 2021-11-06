@@ -65,14 +65,25 @@ module.exports = function (app) {
       const comment = req.body.comment
       if (!comment) return res.send('missing required field comment')
       const book = await BookModel.findById(bookid)
-
-      book.comments.push(comment)
-      await book.save()
-      res.send(book)
+      try {
+        book.comments.push(comment)
+        await book.save()
+        res.send(book)
+      } catch (error) {
+        console.log(error)
+        res.send('failed to add comment')
+      }
     })
 
-    .delete(function (req, res) {
+    .delete(async (req, res) => {
       let bookid = req.params.id
-      //if successful response will be 'delete successful'
+      if (!ObjectId.isValid(bookid)) res.send('Invalid Id')
+      try {
+        await BookModel.deleteOne({ _id: bookid })
+        res.send('complete delete successful')
+      } catch (error) {
+        console.log(error)
+        res.send(`failed to delete book ${bookid}`)
+      }
     })
 }
