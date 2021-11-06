@@ -1,5 +1,6 @@
 'use strict'
 const BookModel = require('../models/BookModel')
+const ObjectId = require('mongoose').Types.ObjectId
 
 module.exports = function (app) {
   app
@@ -48,9 +49,14 @@ module.exports = function (app) {
 
   app
     .route('/api/books/:id')
-    .get(function (req, res) {
+    .get(async (req, res) => {
       let bookid = req.params.id
+      if (!ObjectId.isValid(bookid)) res.send('Invalid Id')
       //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
+      const book = await BookModel.findById(bookid)
+      if (!book) return res.send('no book exists')
+
+      res.send(book)
     })
 
     .post(function (req, res) {
