@@ -51,7 +51,7 @@ module.exports = function (app) {
     .route('/api/books/:id')
     .get(async (req, res) => {
       let bookid = req.params.id
-      if (!ObjectId.isValid(bookid)) res.send('Invalid Id')
+      if (!ObjectId.isValid(bookid)) return res.send('no book exists')
       //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
       const book = await BookModel.findById(bookid)
       if (!book) return res.send('no book exists')
@@ -61,7 +61,7 @@ module.exports = function (app) {
 
     .post(async (req, res) => {
       const bookid = req.params.id
-      if (!ObjectId.isValid(bookid)) res.send('Invalid Id')
+      if (!ObjectId.isValid(bookid)) return res.send('no book exists')
       const comment = req.body.comment
       if (!comment) return res.send('missing required field comment')
       try {
@@ -78,7 +78,7 @@ module.exports = function (app) {
 
     .delete(async (req, res) => {
       let bookid = req.params.id
-      if (!ObjectId.isValid(bookid)) res.send('Invalid Id')
+      if (!ObjectId.isValid(bookid)) return res.send('no book exists')
       try {
         const book = await BookModel.findByIdAndDelete({ _id: bookid })
         if (!book) return res.send('no book exists')
