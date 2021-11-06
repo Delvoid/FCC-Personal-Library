@@ -59,10 +59,16 @@ module.exports = function (app) {
       res.send(book)
     })
 
-    .post(function (req, res) {
-      let bookid = req.params.id
-      let comment = req.body.comment
-      //json res format same as .get
+    .post(async (req, res) => {
+      const bookid = req.params.id
+      if (!ObjectId.isValid(bookid)) res.send('Invalid Id')
+      const comment = req.body.comment
+      if (!comment) return res.send('missing required field comment')
+      const book = await BookModel.findById(bookid)
+
+      book.comments.push(comment)
+      await book.save()
+      res.send(book)
     })
 
     .delete(function (req, res) {
